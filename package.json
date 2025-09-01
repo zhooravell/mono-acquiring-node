@@ -1,0 +1,26 @@
+{
+  "name": "mono-acquiring-node",
+  "version": "1.0.0",
+  "description": "Monobank Acquiring Node SDK ============================",
+  "homepage": "https://github.com/zhooravell/mono-acquiring-node#readme",
+  "bugs": {
+    "url": "https://github.com/zhooravell/mono-acquiring-node/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhooravell/mono-acquiring-node.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "zod": "^4.1.5"
+  }
+}
