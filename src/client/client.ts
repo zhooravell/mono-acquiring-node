@@ -1,7 +1,11 @@
 import {HttpClient, HttpResponse} from "../interfaces/http-client";
 import {GetWalletCardListResponse} from "../models/responses/get-wallet-card-list.response";
-import {GetWalletCardListRequest} from "../models/requests/get-wallet-card-list.request";
+import {
+    GetWalletCardListRequest,
+    GetWalletCardListRequestSchema
+} from "../models/requests/get-wallet-card-list.request";
 import {Config} from "./config";
+import {Validator} from "../utils/validator";
 
 export class Client {
     constructor(
@@ -10,14 +14,29 @@ export class Client {
     ) {
     }
 
-    async getWalletCardList(request: GetWalletCardListRequest): Promise<GetWalletCardListResponse> {
-        const url = ``
+    public async getWalletCardList(request: GetWalletCardListRequest): Promise<GetWalletCardListResponse> {
+        Validator.validate(GetWalletCardListRequestSchema, request);
+
         const response: HttpResponse<GetWalletCardListResponse> = await this.httpClient.request({
             method: 'GET',
-            url: url,
+            url: this.config.getBaseUrl() + '/api/merchant/wallet',
+            headers: this.getHeaders(),
+            params: {
+                walletId: request.walletId,
+            }
         })
 
         return response.data
+    }
+
+    private getHeaders(): Record<string, string> {
+        return {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-Token': this.config.getApiKey(),
+            'X-Cms': this.config.getCms(),
+            'X-Cms-Version': this.config.getCmsVersion(),
+        }
     }
 }
 

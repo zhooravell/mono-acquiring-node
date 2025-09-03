@@ -3,7 +3,7 @@ import {APIKeyError, BaseUrlError, Config} from "../../src";
 describe('Client config', () => {
     it('all arguments', () => {
         const apiKey = 'api-key';
-        const baseUrl = 'https://monobank.ua/api';
+        const baseUrl = 'https://monobank.ua/api/';
         const cms = 'cms';
         const cmsVersion = 'cms-version';
 
@@ -12,7 +12,7 @@ describe('Client config', () => {
         expect(config).toBeDefined();
 
         expect(config.getApiKey()).toEqual(apiKey);
-        expect(config.getBaseUrl()).toEqual(baseUrl);
+        expect(config.getBaseUrl()).toEqual('https://monobank.ua/api');
         expect(config.getCms()).toEqual(cms);
         expect(config.getCmsVersion()).toEqual(cmsVersion);
     });

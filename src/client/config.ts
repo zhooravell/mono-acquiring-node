@@ -39,7 +39,7 @@ export class Config {
     }
 
     getBaseUrl(): string {
-        return this.baseUrl;
+        return this.baseUrl.endsWith('/') ? this.baseUrl.slice(0, -1) : this.baseUrl;
     }
 
     getCms(): string {
