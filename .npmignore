@@ -1,0 +1,17 @@
+src/
+
+tests/
+jest.config.js
+
+tsconfig.json
+.eslintrc.js
+.github/
+
+.idea/
+.vscode/
+
+.github/
+.gitlab-ci.yml
+
+coverage/
+*.log
