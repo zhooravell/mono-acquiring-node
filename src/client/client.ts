@@ -6,6 +6,7 @@ import {
 } from "../models/requests/get-wallet-card-list.request";
 import {Config} from "./config";
 import {Validator} from "../utils/validator";
+import {RemoveWalletCardRequest, RemoveWalletCardRequestSchema} from "../models/requests/remove-wallet-card.request";
 
 export class Client {
     constructor(
@@ -27,6 +28,21 @@ export class Client {
         })
 
         return response.data
+    }
+
+    public async removeWalletCard(request: RemoveWalletCardRequest): Promise<void> {
+        Validator.validate(RemoveWalletCardRequestSchema, request);
+
+        await this.httpClient.request({
+            method: 'DELETE',
+            url: this.config.getBaseUrl() + '/api/merchant/wallet/card',
+            headers: this.getHeaders(),
+            params: {
+                cardToken: request.cardToken
+            }
+        });
+
+        return;
     }
 
     private getHeaders(): Record<string, string> {

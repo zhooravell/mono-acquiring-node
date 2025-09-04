@@ -1,4 +1,4 @@
-import {Client, Config, GetWalletCardListRequest, HttpClient} from '../../src';
+import {Client, Config, GetWalletCardListRequest, HttpClient, RemoveWalletCardRequest} from '../../src';
 import {ValidationError} from "../../src/errors/validation.error";
 
 describe('Client', () => {
@@ -81,5 +81,5 @@ describe('Client', () => {
                 { cardToken: '67XZtXdR4NpKU4', maskedPan: '424242******4241', country: '804' }
             ]
         });
-    })
+    });
 });
