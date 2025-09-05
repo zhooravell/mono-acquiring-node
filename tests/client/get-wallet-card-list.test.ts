@@ -1,29 +1,14 @@
-import {Client, Config, GetWalletCardListRequest, HttpClient, RemoveWalletCardRequest} from '../../src';
+import {Client, Config, GetWalletCardListRequest, HttpClient} from "../../src";
 import {ValidationError} from "../../src/errors/validation.error";
 
-describe('Client', () => {
+describe('Client getWalletCardList', () => {
     const API_KEY = 'test-api-key';
 
     let config: Config;
 
     beforeEach(() => {
         jest.clearAllMocks();
-        config = new Config(
-            API_KEY,
-            'https://api.test.com/',
-            'test-cms',
-            '1.0.0',
-        );
-    });
-
-    it('should be defined', () => {
-        const mockHttpClient: HttpClient = {
-            request: jest.fn().mockResolvedValue({ data: 'test data' }),
-        };
-
-        const client = new Client(mockHttpClient, config);
-
-        expect(client).toBeDefined();
+        config = new Config(API_KEY, 'https://api.test.com/', 'test-cms', '1.0.0');
     });
 
     it('get wallet card list with empty wallet id', async () => {
