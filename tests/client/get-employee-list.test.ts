@@ -1,13 +1,6 @@
-import {
-    BadRequestError,
-    BaseUrlError,
-    Client,
-    Config,
-    ForbiddenError,
-    HttpClient, InternalError,
-    MethodNotAllowedError,
-    NotFoundError, TooManyRequestsError, UnknownError
-} from "../../src";
+import {Client, Config, HttpClient} from "../../src";
+// @ts-ignore
+import {errorsTestCases} from "./errors.test-cases";
 
 describe('Client getEmployeeList', () => {
     const API_KEY = 'test-api-key';
@@ -38,7 +31,7 @@ describe('Client getEmployeeList', () => {
 
         const client = new Client(mockHttpClient, config);
 
-        await client.getEmployeeList();
+        const result = await client.getEmployeeList();
 
         expect(mockHttpClient.request).toHaveBeenCalledWith({
             method: 'GET',
@@ -51,59 +44,19 @@ describe('Client getEmployeeList', () => {
                 'X-Cms-Version': '1.0.0',
             },
         });
+
+        expect(result).toEqual({
+            "list": [
+                {
+                    "id": "3QFX7e7mZfo3R",
+                    "name": "Артур Дент",
+                    "extRef": "abra_kadabra"
+                }
+            ]
+        })
     });
 
-    test.each([
-        [
-            400,
-            'BAD_REQUEST',
-            'error bad request',
-            BadRequestError,
-            'BadRequestError'
-        ],
-        [
-            403,
-            'FORBIDDEN',
-            'forbidden',
-            ForbiddenError,
-            'ForbiddenError'
-        ],
-        [
-            404,
-            'NOT_FOUND',
-            'invalid \'qrId\'',
-            NotFoundError,
-            'NotFoundError'
-        ],
-        [
-            405,
-            'METHOD_NOT_ALLOWED',
-            'Method not allowed',
-            MethodNotAllowedError,
-            'MethodNotAllowedError'
-        ],
-        [
-            429,
-            'TMR',
-            'too many requests',
-            TooManyRequestsError,
-            'TooManyRequestsError'
-        ],
-        [
-            500,
-            'INTERNAL_ERROR',
-            'internal server error',
-            InternalError,
-            'InternalError'
-        ],
-        [
-            502,
-            '502',
-            '502',
-            UnknownError,
-            'UnknownError'
-        ],
-    ])('get employee list bad request', async (
+    test.each(errorsTestCases)('http error codes', async (
         status,
         errCode,
         errText,

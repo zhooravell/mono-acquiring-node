@@ -1,5 +1,7 @@
 import {Client, Config, GetWalletCardListRequest, HttpClient} from "../../src";
 import {ValidationError} from "../../src/errors/validation.error";
+// @ts-ignore
+import {errorsTestCases} from "./errors.test-cases";
 
 describe('Client getWalletCardList', () => {
     const API_KEY = 'test-api-key';
@@ -39,11 +41,9 @@ describe('Client getWalletCardList', () => {
         };
 
         const client = new Client(mockHttpClient, config);
-        const invalidRequest: GetWalletCardListRequest = {
+        const result = await client.getWalletCardList({
             walletId: '1234567890'
-        }
-
-        const result = await client.getWalletCardList(invalidRequest);
+        });
 
         expect(mockHttpClient.request).toHaveBeenCalledWith({
             method: 'GET',
@@ -66,5 +66,41 @@ describe('Client getWalletCardList', () => {
                 { cardToken: '67XZtXdR4NpKU4', maskedPan: '424242******4241', country: '804' }
             ]
         });
+    });
+
+    test.each(errorsTestCases)('http error codes', async (
+        status,
+        errCode,
+        errText,
+        ErrorClass,
+        errorName
+    ) => {
+        const mockHttpClient: HttpClient = {
+            request: jest.fn().mockResolvedValue({
+                status: status,
+                headers: {},
+                data: {
+                    "errCode": errCode,
+                    "errText":errText
+                }
+            }),
+        };
+
+        const client = new Client(mockHttpClient, config);
+
+        try {
+            await client.getWalletCardList({
+                walletId: '1234567890'
+            });
+            fail('Expected to throw Error');
+        } catch (error) {
+            expect(error).toBeInstanceOf(ErrorClass);
+            // @ts-ignore
+            expect(error.message).toBe(errText);
+            // @ts-ignore
+            expect(error.code).toBe(errCode);
+            // @ts-ignore
+            expect(error.name).toBe(errorName);
+        }
     });
 });

@@ -6,6 +6,8 @@ export * from './models/requests/get-wallet-card-list.request';
 export * from './models/requests/remove-wallet-card.request';
 
 export * from './models/responses/get-wallet-card-list.response';
+export * from './models/responses/get-qr-list.response';
+export * from './models/responses/get-employee-list.response';
 
 export * from './errors/mono-acquiring.error';
 export * from './errors/api-key.error';

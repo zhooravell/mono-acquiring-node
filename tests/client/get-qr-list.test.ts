@@ -1,9 +1,8 @@
-import {Client, Config, HttpClient, RemoveWalletCardRequest} from "../../src";
-import {ValidationError} from "../../src/errors/validation.error";
+import {Client, Config, HttpClient} from "../../src";
 // @ts-ignore
 import {errorsTestCases} from "./errors.test-cases";
 
-describe('Client removeWalletCard', () => {
+describe('Client getQRList', () => {
     const API_KEY = 'test-api-key';
 
     let config: Config;
@@ -13,37 +12,31 @@ describe('Client removeWalletCard', () => {
         config = new Config(API_KEY, 'https://api.test.com/', 'test-cms', '1.0.0');
     });
 
-    it('remove wallet card with empty card token', async () => {
-        const mockHttpClient: HttpClient = {
-            request: jest.fn().mockResolvedValue({ data: 'test data' }),
-        };
-
-        const client = new Client(mockHttpClient, config);
-        const invalidRequest = {} as RemoveWalletCardRequest;
-
-        await expect(client.removeWalletCard(invalidRequest))
-            .rejects
-            .toThrow(ValidationError);
-    });
-
-    it('remove wallet card with valid card token', async () => {
+    it('get qr list', async () => {
         const mockHttpClient: HttpClient = {
             request: jest.fn().mockResolvedValue({
                 status: 200,
                 headers: {},
-                data: {}
+                data: {
+                    "list": [
+                        {
+                            "shortQrId": "OBJE",
+                            "qrId": "XJ_DiM4rTd5V",
+                            "amountType": "merchant",
+                            "pageUrl": "https://pay.mbnk.biz/XJ_DiM4rTd5V"
+                        }
+                    ]
+                }
             }),
         };
 
         const client = new Client(mockHttpClient, config);
 
-        await client.removeWalletCard({
-            cardToken: '1234567890'
-        });
+        const result = await client.getQRList();
 
         expect(mockHttpClient.request).toHaveBeenCalledWith({
-            method: 'DELETE',
-            url: 'https://api.test.com/api/merchant/wallet/card',
+            method: 'GET',
+            url: 'https://api.test.com/api/merchant/qr/list',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
@@ -51,9 +44,17 @@ describe('Client removeWalletCard', () => {
                 'X-Cms': 'test-cms',
                 'X-Cms-Version': '1.0.0',
             },
-            params: {
-                cardToken: '1234567890'
-            }
+        });
+
+        expect(result).toEqual({
+            list: [
+                {
+                    shortQrId: 'OBJE',
+                    qrId: 'XJ_DiM4rTd5V',
+                    amountType: 'merchant',
+                    pageUrl: 'https://pay.mbnk.biz/XJ_DiM4rTd5V'
+                }
+            ]
         });
     });
 
@@ -78,9 +79,7 @@ describe('Client removeWalletCard', () => {
         const client = new Client(mockHttpClient, config);
 
         try {
-            await client.removeWalletCard({
-                cardToken: '1234567890'
-            });
+            await client.getQRList();
             fail('Expected to throw Error');
         } catch (error) {
             expect(error).toBeInstanceOf(ErrorClass);

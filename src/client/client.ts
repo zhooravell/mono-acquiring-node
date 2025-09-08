@@ -19,6 +19,7 @@ import {TooManyRequestsError} from "../errors/too-many-requests.error";
 import {InternalError} from "../errors/internal.error";
 import {MethodNotAllowedError} from "../errors/method-not-allowed.error";
 import {UnknownError} from "../errors/unknown.error";
+import {GetQRListResponse} from "../models/responses/get-qr-list.response";
 
 export class Client {
     constructor(
@@ -59,6 +60,16 @@ export class Client {
         const response: HttpResponse<GetEmployeeListResponse> = await this.doRequest({
             method: 'GET',
             url: this.config.getBaseUrl() + '/api/merchant/employee/list',
+            headers: this.getHeaders(),
+        })
+
+        return response.data
+    }
+
+    public async getQRList(): Promise<GetQRListResponse> {
+        const response: HttpResponse<GetQRListResponse> = await this.doRequest({
+            method: 'GET',
+            url: this.config.getBaseUrl() + '/api/merchant/qr/list',
             headers: this.getHeaders(),
         })
 
