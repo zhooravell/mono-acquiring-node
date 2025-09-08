@@ -1,4 +1,13 @@
-import {Client, Config, HttpClient} from "../../src";
+import {
+    BadRequestError,
+    BaseUrlError,
+    Client,
+    Config,
+    ForbiddenError,
+    HttpClient, InternalError,
+    MethodNotAllowedError,
+    NotFoundError, TooManyRequestsError, UnknownError
+} from "../../src";
 
 describe('Client getEmployeeList', () => {
     const API_KEY = 'test-api-key';
@@ -42,5 +51,89 @@ describe('Client getEmployeeList', () => {
                 'X-Cms-Version': '1.0.0',
             },
         });
+    });
+
+    test.each([
+        [
+            400,
+            'BAD_REQUEST',
+            'error bad request',
+            BadRequestError,
+            'BadRequestError'
+        ],
+        [
+            403,
+            'FORBIDDEN',
+            'forbidden',
+            ForbiddenError,
+            'ForbiddenError'
+        ],
+        [
+            404,
+            'NOT_FOUND',
+            'invalid \'qrId\'',
+            NotFoundError,
+            'NotFoundError'
+        ],
+        [
+            405,
+            'METHOD_NOT_ALLOWED',
+            'Method not allowed',
+            MethodNotAllowedError,
+            'MethodNotAllowedError'
+        ],
+        [
+            429,
+            'TMR',
+            'too many requests',
+            TooManyRequestsError,
+            'TooManyRequestsError'
+        ],
+        [
+            500,
+            'INTERNAL_ERROR',
+            'internal server error',
+            InternalError,
+            'InternalError'
+        ],
+        [
+            502,
+            '502',
+            '502',
+            UnknownError,
+            'UnknownError'
+        ],
+    ])('get employee list bad request', async (
+        status,
+        errCode,
+        errText,
+        ErrorClass,
+        errorName
+    ) => {
+        const mockHttpClient: HttpClient = {
+            request: jest.fn().mockResolvedValue({
+                status: status,
+                headers: {},
+                data: {
+                    "errCode": errCode,
+                    "errText":errText
+                }
+            }),
+        };
+
+        const client = new Client(mockHttpClient, config);
+
+        try {
+            await client.getEmployeeList();
+            fail('Expected to throw Error');
+        } catch (error) {
+            expect(error).toBeInstanceOf(ErrorClass);
+            // @ts-ignore
+            expect(error.message).toBe(errText);
+            // @ts-ignore
+            expect(error.code).toBe(errCode);
+            // @ts-ignore
+            expect(error.name).toBe(errorName);
+        }
     });
 });

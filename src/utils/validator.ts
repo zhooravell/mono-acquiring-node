@@ -12,6 +12,7 @@ export class Validator {
                     z.treeifyError(error),
                 );
             }
+
             throw error;
         }
     }
