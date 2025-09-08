@@ -1,4 +1,4 @@
-import {Client, Config, HttpClient, RemoveWalletCardRequest} from "../../src";
+import {Client, Config, HttpClient, RemoveWalletCardRequest, UnknownError} from "../../src";
 import {ValidationError} from "../../src/errors/validation.error";
 // @ts-ignore
 import {errorsTestCases} from "./errors.test-cases";
@@ -90,6 +90,33 @@ describe('Client removeWalletCard', () => {
             expect(error.code).toBe(errCode);
             // @ts-ignore
             expect(error.name).toBe(errorName);
+        }
+    });
+
+    it('unknown error', async () => {
+        const mockHttpClient: HttpClient = {
+            request: jest.fn().mockResolvedValue({
+                status: 502,
+                headers: {},
+                data: {}
+            }),
+        };
+
+        const client = new Client(mockHttpClient, config);
+
+        try {
+            await client.removeWalletCard({
+                cardToken: '1234567890'
+            });
+            fail('Expected to throw Error');
+        } catch (error) {
+            expect(error).toBeInstanceOf(UnknownError);
+            // @ts-ignore
+            expect(error.message).toBe('unknown');
+            // @ts-ignore
+            expect(error.code).toBe('unknown');
+            // @ts-ignore
+            expect(error.name).toBe('UnknownError');
         }
     });
 });
